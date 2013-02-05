@@ -24,7 +24,13 @@ function authToken() {
 
 
 function prettyResultView(data) {
-  if (data.result == 'failed') {
+  if (data.result == 'pending') {
+    return String("PENDING" + " " + data.commit.author_name).cyan.inverse + " "+
+            "pushed " + moment(data.commit.timestamp).fromNow().yellow +
+            "\n  "+ data.commit.message.replace("\n", " ") +"\n  " +
+            data.build_url.underline;
+  }
+  else if (data.result == 'failed') {
     return String("☹" + " " + data.commit.author_name).red.inverse + " " +
             moment(data.finished_at).fromNow().yellow +
             "\n  "+ data.commit.message.replace("\n", " ") +"\n  " +
