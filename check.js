@@ -72,6 +72,6 @@ function getProjects() {
       console.log("Key: "+val.hash_id.inverse);
     });
     console.log("\n to see individual branch statuses run\n");
-    console.log("./check.js <KEY>");
+    console.log("semaphoreStatus <KEY>");
   });
 }
