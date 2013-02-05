@@ -2,7 +2,7 @@ a simple way to check all the branches on semaphore for their current status fro
 
 `npm install -g semaphorestatus`
 
-then run semaphoreStatus
+then simply run semaphorestatus
 
 make sure to set you env var with your semaphoreKey
 
