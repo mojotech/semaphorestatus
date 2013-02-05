@@ -1,5 +1,5 @@
 {
-  "name": "semaphoreStatus",
+  "name": "semaphorestatus",
   "version": "0.1.0",
   "description": "A utility to check passing branches on semaphore",
   "main": "check.js",
