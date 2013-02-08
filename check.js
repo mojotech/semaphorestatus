@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var key         = process.env.semaphoreKey;
+var context     = require('./util/contextChecker');
 var colors      = require('colors');
 var request     = require('request');
 var moment      = require('moment');
@@ -43,7 +44,7 @@ function prettyResultView(data) {
 }
 
 function getBranchDetails(hashID) {
-  console.log("---Fetching---\n".yellow);
+  console.log("Fetching Project Details\n".yellow);
   request.get(baseURL+"projects/"+hashID+"/branches"+authToken(), function(err, res, branches) {
     branches    = JSON.parse(branches);
     branchData  = [];
@@ -55,6 +56,11 @@ function getBranchDetails(hashID) {
       });
     });
   });
+}
+
+function projectInContext(branches) {
+  projectName = context.get();
+  return _.where(branches, {name: projectName});
 }
 
 function outputBranchDetailResults(results) {
@@ -70,14 +76,18 @@ function getBranchInfo(hashID, id, cb) {
 }
 
 function getProjects() {
-  console.log("Fetching Branch Info".yellow);
+  console.log("Fetching All Projects".yellow);
   request.get(baseURL+"projects"+authToken(), function(err, res, data) {
     data = JSON.parse(data);
-    _.each(data, function(val) {
-      console.log("Name: "+val.name.green);
-      console.log("Key: "+val.hash_id.inverse);
-    });
-    console.log("\n to see individual branch statuses run\n");
-    console.log("semaphoreStatus <KEY>");
+    if (projectInContext(data).length == 0) {
+      _.each(data, function(val) {
+        console.log("Name: "+val.name.green);
+        console.log("Key: "+val.hash_id.inverse);
+      });
+      console.log("\n to see individual branch statuses run\n");
+      console.log("semaphoreStatus <KEY>");
+    } else {
+      getBranchDetails(projectInContext(data)[0].hash_id);
+    }
   });
 }
