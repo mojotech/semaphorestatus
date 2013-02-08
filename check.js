@@ -68,9 +68,20 @@ function projectInContext(branches) {
 }
 
 function outputBranchDetailResults(results) {
-  _.each(results, function(val) {
+  _.each(sortByTime(results), function(val) {
     console.log(prettyResultView(val));
   });
+}
+
+function sortByTime(branches) {
+  return _.sortBy(branches, function(branch) {
+    if (branch.finished_at) {
+      return moment(branch.finished_at).toDate().getTime()
+    } else {
+      return moment(branch.commit.timestamp).toDate().getTime()
+
+    }
+  }).reverse();
 }
 
 function getBranchInfo(hashID, id, cb) {
