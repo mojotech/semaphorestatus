@@ -1,6 +1,6 @@
 {
   "name": "semaphorestatus",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "A utility to check passing branches on semaphore",
   "main": "check.js",
   "dependencies": {
@@ -15,6 +15,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": "",
-  "author": "Mojo Tech",
+  "author": "MojoTech",
+  "contributors": ["Sam Saccone @sam_saccone", "Matt Forsyth"],
   "license": "BSD"
 }
