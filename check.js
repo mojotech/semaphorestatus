@@ -1,26 +1,28 @@
 #!/usr/bin/env node
 
-var key         = process.env.semaphoreKey;
 var context     = require('./util/contextChecker');
+var authToken  = process.env.SEMAPHORE_AUTH_TOKEN;
 var colors      = require('colors');
 var request     = require('request');
 var moment      = require('moment');
 var _           = require('underscore');
 var baseURL     = "https://semaphoreapp.com/api/v1/";
 
-if (key) {
+if (authToken) {
   if (process.argv.length > 2) {
     getBranchDetails(process.argv[2]);
   } else {
     getProjects();
   }
 } else {
-  console.log("Please enter semaphoreapp key as".red);
-  console.log("export semaphoreKey='<API_KEY>'".red);
+  console.log("Please configure your Semaphore auth token.".red);
+  console.log("  (You can find it under the 'API' heading in".red);
+  console.log("   the settings page for any Semaphore project.)".red);
+  console.log("export SEMAPHORE_AUTH_TOKEN='<your auth token>'".red);
 }
 
-function authToken() {
-  return "?auth_token="+key;
+function authTokenParams() {
+  return "?auth_token="+authToken;
 }
 
 
@@ -45,7 +47,7 @@ function prettyResultView(data) {
 
 function getBranchDetails(hashID) {
   console.log("Fetching Project Details\n".yellow);
-  request.get(baseURL+"projects/"+hashID+"/branches"+authToken(), function(err, res, branches) {
+  request.get(baseURL+"projects/"+hashID+"/branches"+authTokenParams(), function(err, res, branches) {
     branches    = JSON.parse(branches);
     branchData  = [];
     _.each(branches, function(val) {
@@ -70,14 +72,14 @@ function outputBranchDetailResults(results) {
 }
 
 function getBranchInfo(hashID, id, cb) {
-  request.get(baseURL+"projects/"+hashID+"/"+id+"/status"+authToken(), function(err, res, data) {
+  request.get(baseURL+"projects/"+hashID+"/"+id+"/status"+authTokenParams(), function(err, res, data) {
     cb(JSON.parse(data));
   });
 }
 
 function getProjects() {
   console.log("Fetching All Projects".yellow);
-  request.get(baseURL+"projects"+authToken(), function(err, res, data) {
+  request.get(baseURL+"projects"+authTokenParams(), function(err, res, data) {
     data = JSON.parse(data);
     if (projectInContext(data).length == 0) {
       _.each(data, function(val) {
