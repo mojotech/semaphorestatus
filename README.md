@@ -2,8 +2,15 @@ a simple way to check all the branches on semaphore for their current status fro
 
 `npm install -g semaphorestatus`
 
-then simply run semaphorestatus
+To tell semaphoreStatus who you are, you'll need to configure your
+Semaphore auth token.  To find your auth token, click on "Settings"
+from any of your Semaphore projects.  Then click on the "API" link in
+the main settings navigation.  Once you've found it, put this value in
+the environment variable "SEMAPHORE_AUTH_TOKEN":
 
-make sure to set you env var with your semaphoreKey
+`export SEMAPHORE_AUTH_TOKEN='<API_KEY>'`
 
-`export semaphoreKey='<API_KEY>'`
+Now, you're to simple run "semaphorestatus".  Running this command
+will give you more information about how to observe specific projects
+and branches.
+
