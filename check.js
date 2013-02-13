@@ -25,7 +25,6 @@ function authTokenParams() {
   return "?auth_token="+authToken;
 }
 
-
 function prettyResultView(data) {
   if (data.commit) {
     if (data.result == 'pending') {
