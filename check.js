@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 
-var context     = require('./util/contextChecker');
-var authToken  = process.env.SEMAPHORE_AUTH_TOKEN;
-var colors      = require('colors');
-var request     = require('request');
-var moment      = require('moment');
-var _           = require('underscore');
-var baseURL     = "https://semaphoreapp.com/api/v1/";
+var context             = require('./util/contextChecker');
+var branches            = require('./util/localBranches');
+var authToken           = process.env.SEMAPHORE_AUTH_TOKEN;
+var colors              = require('colors');
+var request             = require('request');
+var moment              = require('moment');
+var _                   = require('underscore');
+var baseURL             = "https://semaphoreapp.com/api/v1/";
+var showAllBranches     = Boolean(~process.argv.indexOf("--all"));
 
 if (authToken) {
-  if (process.argv.length > 2) {
-    getBranchDetails(process.argv[2]);
+  if (~process.argv.indexOf("--project")) {
+    getBranchDetails(process.argv[process.argv.indexOf("--project")+1]);
   } else {
     getProjects();
   }
@@ -28,18 +30,18 @@ function authTokenParams() {
 function prettyResultView(data) {
   if (data.commit) {
     if (data.result == 'pending') {
-      return String("PENDING" + " " + data.commit.author_name).cyan.inverse + " "+
+      return String("PENDING" + " " + data.branch_name).cyan.inverse + " "+
               "pushed " + moment(data.commit.timestamp).fromNow().yellow +
               "\n  "+ data.commit.message.replace("\n", " ") +"\n  " +
               data.build_url.underline;
     }
     else if (data.result == 'failed') {
-      return String("☹" + " " + data.commit.author_name).red.inverse + " " +
+      return String("☹" + " " + data.branch_name).red.inverse + " " +
               moment(data.finished_at).fromNow().yellow +
               "\n  "+ data.commit.message.replace("\n", " ") +"\n  " +
               data.build_url.underline;
     }
-    return String("☻" + " " + data.commit.author_name).green + " " +
+    return String("✔" + " " + data.branch_name).green.inverse + " " +
             moment(data.finished_at).fromNow().yellow +
             "\n  "+ data.commit.message.replace("\n", " ") +"\n  " +
             data.commit.url.underline;
@@ -47,17 +49,27 @@ function prettyResultView(data) {
 }
 
 function getBranchDetails(hashID) {
-  console.log("Fetching Project Details\n".yellow);
-  request.get(baseURL+"projects/"+hashID+"/branches"+authTokenParams(), function(err, res, branches) {
-    branches    = JSON.parse(branches);
-    branchData  = [];
-    _.each(branches, function(val) {
-      getBranchInfo(hashID, val.id, function(data) {
-        data.finished_at = moment(data.finished_at);
-        branchData.push(data);
-        branchData.length == branches.length && outputBranchDetailResults(branchData);
+  branches.get(function(err, localBranches) {
+    if (err) {
+      console.log("Error Fetching Local Branched".red);
+      console.log(err);
+    } else {
+      totalProcessed  = 0;
+      console.log("Fetching Project Details\n".yellow);
+      request.get(baseURL+"projects/"+hashID+"/branches"+authTokenParams(), function(err, res, branches) {
+        branches    = JSON.parse(branches);
+        branchData  = [];
+        _.each(branches, function(val) {
+          getBranchInfo(hashID, val.id, function(data) {
+            data.finished_at = moment(data.finished_at);
+            if (~localBranches.indexOf(data.branch_name) || showAllBranches) {
+              branchData.push(data);
+            }
+            ++totalProcessed == branches.length && outputBranchDetailResults(branchData);
+          });
+        });
       });
-    });
+    }
   });
 }
 
@@ -99,7 +111,7 @@ function getProjects() {
         console.log("Key: "+val.hash_id.inverse);
       });
       console.log("\n to see individual branch statuses run\n");
-      console.log("semaphoreStatus <KEY>");
+      console.log("semaphoreStatus --project <KEY>");
     } else {
       getBranchDetails(projectInContext(data)[0].hash_id);
     }

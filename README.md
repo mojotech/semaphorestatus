@@ -14,3 +14,10 @@ Now, you're to simple run "semaphorestatus".  Running this command
 will give you more information about how to observe specific projects
 and branches.
 
+CLI Options
+
+`semaphorestatus --project <key>` to show a single project
+
+`semaphorestatus --all` to show all local branches
+
+`semaphorestatus` to show only your local branches
