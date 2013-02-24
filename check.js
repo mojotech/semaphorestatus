@@ -89,9 +89,14 @@ function getBranchDetails(hashID) {
   });
 }
 
-function projectInContext(branches) {
-  projectName = context.get();
-  return _.where(branches, {name: projectName});
+function projectInContext(branches, cb) {
+  context.get(function(remotes) {
+    cb(_.filter(branches, function(branch) {
+      return _.filter(remotes, function(remote) {
+        return ~remote.indexOf(branch.name);
+      }).length;
+    }));
+  });
 }
 
 function outputBranchDetailResults(results) {
@@ -131,16 +136,18 @@ function fetchAllProjects(cb) {
 }
 
 function displayProjectDetails(allProjects) {
-  if (projectInContext(allProjects).length == 0) {
-    _.each(allProjects, function(val) {
-      console.log("Name: "+val.name.green);
-      console.log("Key: "+val.hash_id.inverse);
-    });
-    console.log("\n to see individual branch statuses run\n");
-    console.log("semaphoreStatus --project <KEY>");
-  } else {
-    getBranchDetails(projectInContext(allProjects)[0].hash_id);
-  }
+  projectInContext(allProjects, function(data) {
+    if (data.length == 0) {
+      _.each(allProjects, function(val) {
+        console.log("Name: "+val.name.green);
+        console.log("Key: "+val.hash_id.inverse);
+      });
+      console.log("\n to see individual branch statuses run\n");
+      console.log("semaphoreStatus --project <KEY>");
+    } else {
+      getBranchDetails(data[0].hash_id);
+    }
+  });
 }
 
 function getProjects() {
