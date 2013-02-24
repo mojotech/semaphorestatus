@@ -16,6 +16,8 @@ and branches.
 
 CLI Options
 
+`semaphorestatus --force-update` to clear the project cache
+
 `semaphorestatus --project <key>` to show a single project
 
 `semaphorestatus --all` to show all local branches
