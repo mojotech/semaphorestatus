@@ -2,6 +2,7 @@
 var context             = require('../lib/contextChecker');
 var branches            = require('../lib/localBranches');
 var cachedProjects      = require('../lib/cachedProject');
+var strings             = require('../lib/strings');
 
 var authToken           = process.env.SEMAPHORE_AUTH_TOKEN;
 var colors              = require('colors');
@@ -26,10 +27,7 @@ if (authToken) {
     getProjects();
   }
 } else {
-  console.log("Please configure your Semaphore auth token.".red);
-  console.log("  (You can find it under the 'API' heading in".red);
-  console.log("   the settings page for any Semaphore project.)".red);
-  console.log("export SEMAPHORE_AUTH_TOKEN='<your auth token>'".red);
+  console.log(strings.noToken);
 }
 
 function authTokenParams() {
@@ -154,8 +152,7 @@ function displayProjectDetails(err, allProjects) {
           console.log("Name: "+val.name.green);
           console.log("Key: "+val.hash_id.inverse);
         });
-        console.log("\n to see individual branch statuses run\n");
-        console.log("semaphoreStatus --project <KEY>");
+        console.log(strings.singleBranchMessage);
       } else {
         getBranchDetails(data[0].hash_id);
       }
