@@ -1,24 +1,19 @@
 #!/usr/bin/env node
 var context             = require('../lib/contextChecker');
 var branches            = require('../lib/localBranches');
+var regexFilter         = require('../lib/regexFilter');
 var cachedProjects      = require('../lib/cachedProject');
 var strings             = require('../lib/strings');
+var branchResult        = require('../lib/branchResult');
 
 var authToken           = process.env.SEMAPHORE_AUTH_TOKEN;
 var colors              = require('colors');
 var request             = require('request');
 var moment              = require('moment');
 var _                   = require('underscore');
-var fs                  = require('fs');
 var path                = require('path');
 var baseURL             = "https://semaphoreapp.com/api/v1/";
 var showAllBranches     = Boolean(~process.argv.indexOf("--all"));
-var useRegex            = Boolean(~process.argv.indexOf("--regex"));
-var regex               = undefined
-
-if (useRegex) {
-  regex = process.argv[process.argv.indexOf("--regex")+1]
-}
 
 if (authToken) {
   if (~process.argv.indexOf("--project")) {
@@ -34,39 +29,6 @@ function authTokenParams() {
   return "?auth_token="+authToken;
 }
 
-function prettyResultView(data) {
-  if (data.commit) {
-    if (data.result == 'pending') {
-      return String("PENDING" + " " + data.branch_name).cyan.inverse + " "+
-              "pushed " + moment(data.commit.timestamp).fromNow().yellow +
-              "\n  "+ data.commit.message.replace("\n", " ") +"\n  " +
-              data.build_url.underline;
-    }
-    else if (data.result == 'failed') {
-      return String("☹" + " " + data.branch_name).red.inverse + " " +
-              moment(data.finished_at).fromNow().yellow +
-              "\n  "+ data.commit.message.replace("\n", " ") +"\n  " +
-              data.build_url.underline;
-    }
-    return String("✔" + " " + data.branch_name).green.inverse + " " +
-            moment(data.finished_at).fromNow().yellow +
-            "\n  "+ data.commit.message.replace("\n", " ") +"\n  " +
-            data.commit.url.underline;
-  }
-}
-
-function filterBranchesByRegex(branches, regex){
-  if (typeof regex != 'undefined') {
-    try {
-      var pattern = new RegExp(regex)
-      branches = _.filter(branches, function(branch){ return pattern.test(branch['name']) });
-    } catch(e) {
-      console.log(e.toString().red)
-    }
-  }
-  return branches;
-}
-
 function getBranchDetails(hashID) {
   branches.get(function(err, localBranches) {
     if (err) {
@@ -78,7 +40,7 @@ function getBranchDetails(hashID) {
       request.get(baseURL+"projects/"+hashID+"/branches"+authTokenParams(), function(err, res, branches) {
         branches    = JSON.parse(branches);
         branchData  = [];
-        branches = filterBranchesByRegex(branches, regex);
+        branches = regexFilter(branches);
         _.each(branches, function(val) {
           getBranchInfo(hashID, val.id, function(data) {
             data.finished_at = moment(data.finished_at);
@@ -105,7 +67,7 @@ function projectInContext(branches, cb) {
 
 function outputBranchDetailResults(results) {
   _.each(sortByTime(results), function(val) {
-    console.log(prettyResultView(val));
+    console.log(branchResult.print(val));
   });
 }
 
