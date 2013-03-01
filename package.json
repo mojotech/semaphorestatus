@@ -2,7 +2,7 @@
   "name": "semaphorestatus",
   "version": "0.4.1",
   "description": "A utility to check passing branches on semaphore",
-  "main": "check.js",
+  "main": "bin/semaphore-status.js",
   "dependencies": {
     "colors": "~0.6.0-1",
     "moment": "~1.7.2",
@@ -10,7 +10,7 @@
     "underscore": "~1.4.4"
   },
   "devDependencies": {},
-  "bin": {"semaphoreStatus": "check.js"},
+  "bin": {"semaphoreStatus": "bin/semaphore-status.js"},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var cacheFilename       = __dirname + "/.semaphorestatus-cache";
-var context             = require('./util/contextChecker');
-var branches            = require('./util/localBranches');
+var context             = require('../lib/contextChecker');
+var branches            = require('../lib/localBranches');
 var authToken           = process.env.SEMAPHORE_AUTH_TOKEN;
 var colors              = require('colors');
 var request             = require('request');
