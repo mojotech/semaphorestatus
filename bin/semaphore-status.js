@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-var cacheFilename       = __dirname + "/.semaphorestatus-cache";
 var context             = require('../lib/contextChecker');
 var branches            = require('../lib/localBranches');
+var cachedProjects      = require('../lib/cachedProject');
+
 var authToken           = process.env.SEMAPHORE_AUTH_TOKEN;
 var colors              = require('colors');
 var request             = require('request');
@@ -29,20 +30,6 @@ if (authToken) {
   console.log("  (You can find it under the 'API' heading in".red);
   console.log("   the settings page for any Semaphore project.)".red);
   console.log("export SEMAPHORE_AUTH_TOKEN='<your auth token>'".red);
-}
-
-function cachedProjected(cb) {
-  fs.readFile(cacheFilename, "utf8", function(err, data) {
-    if (err) {
-      cb(false);
-    } else {
-      try {
-        cb(JSON.parse(data));
-      } catch (e) {
-        cb(false);
-      }
-    }
-  });
 }
 
 function authTokenParams() {
@@ -141,40 +128,47 @@ function getBranchInfo(hashID, id, cb) {
   });
 }
 
-function fetchAllProjects(cb) {
-  console.log("Fetching All Projects".yellow);
-  request.get(baseURL+"projects"+authTokenParams(), function(err, res, data) {
-    fs.writeFile(cacheFilename, data, 'utf8', function(err) {
+function fetchAllProjects(err, cb) {
+  if (err) {
+    console.log("Error".red.inverse);
+    console.log(err);
+  } else {
+    console.log("Fetching All Projects".yellow);
+    request.get(baseURL+"projects"+authTokenParams(), function(err, res, data) {
       if (err) {
-        console.log("Problem Saving Cache".red);
-        console.log(JSON.stringify(err));
+        cb(err);
+      } else {
+        cachedProjects.save(data, cb);
       }
-      cb(JSON.parse(data));
     });
-  });
+  }
 }
 
-function displayProjectDetails(allProjects) {
-  projectInContext(allProjects, function(data) {
-    if (data.length == 0) {
-      _.each(allProjects, function(val) {
-        console.log("Name: "+val.name.green);
-        console.log("Key: "+val.hash_id.inverse);
-      });
-      console.log("\n to see individual branch statuses run\n");
-      console.log("semaphoreStatus --project <KEY>");
-    } else {
-      getBranchDetails(data[0].hash_id);
-    }
-  });
+function displayProjectDetails(err, allProjects) {
+  if (err) {
+    console.log("Error".red.inverse);
+  } else {
+    projectInContext(allProjects, function(data) {
+      if (data.length == 0) {
+        _.each(allProjects, function(val) {
+          console.log("Name: "+val.name.green);
+          console.log("Key: "+val.hash_id.inverse);
+        });
+        console.log("\n to see individual branch statuses run\n");
+        console.log("semaphoreStatus --project <KEY>");
+      } else {
+        getBranchDetails(data[0].hash_id);
+      }
+    });
+  }
 }
 
 function getProjects() {
-  cachedProjected(function(allProjects) {
+  cachedProjects.get(function(err, allProjects) {
     if (!allProjects || (~process.argv.indexOf("--force-update"))) {
-      fetchAllProjects(displayProjectDetails);
+      fetchAllProjects(err, displayProjectDetails);
     } else {
-      displayProjectDetails(allProjects);
+      displayProjectDetails(err, allProjects);
     }
   });
 }
