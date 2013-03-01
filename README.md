@@ -23,4 +23,6 @@ the main settings navigation. Then set
 
 `semaphorestatus --all` to show all local branches
 
+`semaphorestatus --regex <regular expression>` to filter branches by a regular expression
+
 `semaphorestatus` to show only your local branches
