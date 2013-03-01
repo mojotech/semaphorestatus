@@ -11,6 +11,12 @@ var fs                  = require('fs');
 var path                = require('path');
 var baseURL             = "https://semaphoreapp.com/api/v1/";
 var showAllBranches     = Boolean(~process.argv.indexOf("--all"));
+var useRegex            = Boolean(~process.argv.indexOf("--regex"));
+var regex               = undefined
+
+if (useRegex) {
+  regex = process.argv[process.argv.indexOf("--regex")+1]
+}
 
 if (authToken) {
   if (~process.argv.indexOf("--project")) {
@@ -64,6 +70,18 @@ function prettyResultView(data) {
   }
 }
 
+function filterBranchesByRegex(branches, regex){
+  if (typeof regex != 'undefined') {
+    try {
+      var pattern = new RegExp(regex)
+      branches = _.filter(branches, function(branch){ return pattern.test(branch['name']) });
+    } catch(e) {
+      console.log(e.toString().red)
+    }
+  }
+  return branches;
+}
+
 function getBranchDetails(hashID) {
   branches.get(function(err, localBranches) {
     if (err) {
@@ -75,6 +93,7 @@ function getBranchDetails(hashID) {
       request.get(baseURL+"projects/"+hashID+"/branches"+authTokenParams(), function(err, res, branches) {
         branches    = JSON.parse(branches);
         branchData  = [];
+        branches = filterBranchesByRegex(branches, regex);
         _.each(branches, function(val) {
           getBranchInfo(hashID, val.id, function(data) {
             data.finished_at = moment(data.finished_at);
