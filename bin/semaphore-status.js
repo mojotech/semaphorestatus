@@ -32,22 +32,22 @@ function authTokenParams() {
 function getBranchDetails(hashID) {
   branches.get(function(err, localBranches) {
     if (err) {
-      console.log("Error Fetching Local Branched".red);
+      console.log("Error Getting Local Branches".red);
       console.log(err);
     } else {
       totalProcessed  = 0;
-      console.log("Fetching Project Details\n".yellow);
-      request.get(baseURL+"projects/"+hashID+"/branches"+authTokenParams(), function(err, res, branches) {
-        branches    = JSON.parse(branches);
-        branchData  = [];
-        branches = regexFilter(branches);
-        _.each(branches, function(val) {
+      console.log("\nFetching Project Details\n".yellow);
+      request.get(baseURL+"projects/"+hashID+"/branches"+authTokenParams(), function(err, res, data) {
+        remoteBranches    = JSON.parse(data);
+        branchData        = [];
+        remoteBranches    = regexFilter(remoteBranches);
+        _.each(remoteBranches, function(val) {
           getBranchInfo(hashID, val.id, function(data) {
             data.finished_at = moment(data.finished_at);
             if (~localBranches.indexOf(data.branch_name) || showAllBranches) {
               branchData.push(data);
             }
-            ++totalProcessed == branches.length && outputBranchDetailResults(branchData);
+            ++totalProcessed == remoteBranches.length && outputBranchDetailResults(branchData);
           });
         });
       });
@@ -124,8 +124,8 @@ function displayProjectDetails(err, allProjects) {
 
 function getProjects() {
   cachedProjects.get(function(err, allProjects) {
-    if (!allProjects || (~process.argv.indexOf("--force-update"))) {
-      fetchAllProjects(err, displayProjectDetails);
+    if (err || !allProjects || (~process.argv.indexOf("--force-update"))) {
+      fetchAllProjects(null, displayProjectDetails);
     } else {
       displayProjectDetails(err, allProjects);
     }
