@@ -90,7 +90,7 @@ function getBranchInfo(hashID, id, cb) {
 
 function fetchAllProjects(err, cb) {
   if (err) {
-    console.log("Error".red.inverse);
+    console.log("Error fetching projects cache".red.inverse);
     console.log(err);
   } else {
     console.log("Fetching All Projects".yellow);
