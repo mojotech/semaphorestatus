@@ -116,6 +116,7 @@ function displayProjectDetails(err, allProjects) {
         });
         console.log(strings.singleBranchMessage);
       } else {
+        console.log(strings.defaultProjectFilter(data[0].name));
         getBranchDetails(data[0].hash_id);
       }
     });
