@@ -36,7 +36,7 @@ function getBranchDetails(hashID) {
       console.log(err);
     } else {
       totalProcessed  = 0;
-      console.log("\nFetching Project Details\n".yellow);
+      console.log("\nFetching Project Details...\n".yellow);
       request.get(baseURL+"projects/"+hashID+"/branches"+authTokenParams(), function(err, res, data) {
         remoteBranches    = JSON.parse(data);
         branchData        = [];
