@@ -107,6 +107,7 @@ function fetchAllProjects(err, cb) {
 function displayProjectDetails(err, allProjects) {
   if (err) {
     console.log("Error".red.inverse);
+    console.log(err);
   } else {
     projectInContext(allProjects, function(data) {
       if (data.length == 0) {
