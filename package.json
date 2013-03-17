@@ -10,7 +10,7 @@
     "underscore": "~1.4.4"
   },
   "devDependencies": {},
-  "bin": {"semaphoreStatus": "bin/semaphore-status.js"},
+  "bin": {"semaphore-status": "bin/semaphore-status.js"},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

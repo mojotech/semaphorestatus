@@ -7,7 +7,7 @@
 ## `npm install -g semaphorestatus`
 
 ### Setup
-To tell semaphoreStatus who you are, you'll need to configure your
+To tell semaphore-status who you are, you'll need to configure your
 Semaphore auth token.  To find your auth token, click on "Settings"
 from any of your Semaphore projects.  Then click on the "API" link in
 the main settings navigation. Then set
