@@ -12,6 +12,7 @@ Semaphore auth token.  To find your auth token, click on "Settings"
 from any of your Semaphore projects.  Then click on the "API" link in
 the main settings navigation. Then set
 `export SEMAPHORE_AUTH_TOKEN='<API_KEY>'`
+or simply run `semaphorestatus -a <api token>`
 
 #### `and run semaphorestatus`
 
@@ -20,6 +21,8 @@ the main settings navigation. Then set
 `semaphorestatus --force-update` to clear the project cache
 
 `semaphorestatus --project <key>` to show a single project
+
+`semaphorestatus -a <api token>` to add your API token
 
 `semaphorestatus --all` to show all local branches
 
