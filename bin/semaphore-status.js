@@ -6,7 +6,7 @@ var cachedProjects      = require('../lib/cachedProject');
 var strings             = require('../lib/strings');
 var branchResult        = require('../lib/branchResult');
 
-var authToken           = process.env.SEMAPHORE_AUTH_TOKEN;
+var authToken           = require('../lib/getAuth')();
 var colors              = require('colors');
 var request             = require('request');
 var moment              = require('moment');
