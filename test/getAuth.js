@@ -4,7 +4,11 @@ var authToken = require('../lib/getAuth');
 
 describe('getAuthToken', function() {
   before(function() {
-    fs.unlink(process.env.HOME + "/.semaphorestatus-api-cache");
+    try {
+      fs.unlink(process.env.HOME + "/.semaphorestatus-api-cache");
+    } catch(e) {
+
+    }
   });
 
   beforeEach(function() {
