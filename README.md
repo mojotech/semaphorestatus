@@ -1,5 +1,7 @@
 # Semaphore Status
 ### Check Semaphore from the CLI!
+[![Build Status](https://travis-ci.org/mojotech/semaphorestatus.png?branch=master)](https://travis-ci.org/mojotech/semaphorestatus)
+
 <p style="text-align:center">
   <img src="https://raw.github.com/mojotech/semaphorestatus/master/logo.png" width="300px"/>
 </p>
