@@ -9,10 +9,12 @@
     "request": "~2.12.0",
     "underscore": "~1.4.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "latest"
+  },
   "bin": {"semaphore-status": "bin/semaphore-status.js"},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test"
   },
   "repository": {
       "type": "git",
