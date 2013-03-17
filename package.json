@@ -1,6 +1,6 @@
 {
   "name": "semaphorestatus",
-  "version": "0.4.14",
+  "version": "0.4.2",
   "description": "A utility to check passing branches on semaphore",
   "main": "bin/semaphore-status.js",
   "dependencies": {
