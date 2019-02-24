@@ -12,6 +12,9 @@
   "devDependencies": {
     "mocha": "latest"
   },
+  "engines": {
+    "node": ">=1.0.0"
+  },
   "bin": {
     "semaphore-status": "bin/semaphore-status.js"
   },
